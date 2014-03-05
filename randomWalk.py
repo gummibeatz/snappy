@@ -4,41 +4,48 @@ import networkx as nx
 import numpy as np
 import random as rd
 
-T1 = nx.DiGraph()
-
-#ex A->C->B->A
-
-
-    
+#create the graph
+#ex 0->1->2->0    1->3
+T1 = nx.DiGraph()     
 T1.add_edge(0,1)
 T1.add_edge(1,2)
 T1.add_edge(2,0)
+T1.add_edge(1,3)
 
-for n in range(1, len(T1.nodes()) +1):
+#set counts at each node to 0
+for n in range(0, len(T1.nodes())):
     T1.add_node(n, ct =0)
-    
-print T1.nodes(data = True)[1][1]
 
-
+#constants
 ts = 10
-
-numnodes = 3 
-
-startnode = np.random.randint(low = 0, high =2, size = 1)[0]
-#print startnode , T1.successors(startnode)
-current = startnode
-
-for t in range(1, 4):
-    nxt = rd.choice(T1.successors(current))
-    # if statement to create all successors. 
-    # while loop for random choice of succesors, if ct ==1 .
-    # ends if randomizes to never been walked on node or used up all nodes
-    #while T1.nodes(data =True)[nxt][1]['ct'] == 1:
-    #    nxt = rd.choice(T1.successors(current))
-    T1.add_node(current, ct=1)
-    current = nxt
-    print T1.nodes(data = True)[1][1]['ct']
+tuple_index = 1
+num_nodes = len(T1.nodes(data=True))
 
 
-#nx.draw(T1)
-#pylab.show()
+for x in range(0,ts): 
+    #select starting node
+    current_node= np.random.randint(low = 0, high =num_nodes, size = 1)[0]
+    visited = set()
+    while True:
+        visited.add(current_node)
+        current_count =  T1.nodes(data = True)[current_node][tuple_index]['ct']
+        T1.add_node(current_node, ct = current_count+1)
+        current_successors = set(T1.successors(current_node))
+        valid_successors = current_successors.difference(visited)
+        if not valid_successors:
+            break
+        current_node = rd.sample(valid_successors,1)[0]
+
+
+for x in range(0,num_nodes):
+    walk_count = T1.nodes(data=True)[x][tuple_index]['ct']
+    print "node", x, "has been walked through", walk_count, " times "
+
+
+
+
+
+
+
+
+
